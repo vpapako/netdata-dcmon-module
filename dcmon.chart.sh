@@ -12,18 +12,17 @@
 
 # _update_every is a special variable - it holds the number of seconds
 # between the calls of the _update() function
-X_update_every=
+dcmon_update_every=
 
 # the priority is used to sort the charts on the dashboard
 # 1 = the first chart
-X_priority=
+dcmon_priority=
 
 # global variables to store our collected data
 # remember: they need to start with the module name
-X=
 
 # _check is called once, to find out if this chart should be enabled or not
-X_check() {
+dcmon_check() {
 	# this should return:
 	#  - 0 to enable the chart
 	#  - 1 to disable the chart
@@ -31,12 +30,12 @@ X_check() {
 }
 
 # _create is called once, to create the charts
-X_create() {
+dcmon_create() {
 	return 0
 }
 
 # _update is called continuously, to collect the values
-X_update() {
+dcmon_update() {
 	# the first argument to this function is the microseconds since last update
 	# pass this parameter to the BEGIN statement (see bellow).
 	return 0
