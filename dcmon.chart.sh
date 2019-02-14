@@ -93,6 +93,18 @@ dcmon_get() {
 	dcmon_SphaseKiloWattHoursA=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [22] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
 	dcmon_TphaseKiloWattHoursA=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [23] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
 
+        # Board "B"
+        dcmon_RphaseWattsB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [15] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_SphaseWattsB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [16] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_TphaseWattsB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [17] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_RphaseIrmsB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [9] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_SphaseIrmsB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [10] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_TphaseIrmsB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [11] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_RphaseKiloWattHoursB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [24] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_SphaseKiloWattHoursB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [25] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_TphaseKiloWattHoursB=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [26] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+
+
         # this should return:
         #  - 0 to send the data to netdata
         #  - 1 to report a failure to collect the data
@@ -115,27 +127,39 @@ dcmon_check() {
 dcmon_create() {
 	# create the HVAC Board (watts) chart with 3 dimensions
 	cat <<EOF
-CHART dcmon.hvac_board_total_kwh '' "Total energy consumption of HVAC Board" "Kwh" "HVAC Board" $dcmon_priority $dcmon_update_every
+CHART dcmon.board_a_total_kwh '' "Total energy consumption of Board A" "Kwh" "Board A" $((dcmon_priority + 4)) $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
 DIMENSION Tphase '' absolute 1 100
-CHART dcmon.hvac_board_watts '' "Energy consumption of HVAC Board" "watts" "HVAC Board" $dcmon_priority $dcmon_update_every
+CHART dcmon.board_a_watts '' "Energy consumption of Board A" "watts" "Board A" $((dcmon_priority + 3)) $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
 DIMENSION Tphase '' absolute 1 100
-CHART dcmon.hvac_board_irms '' "Energy consumption of HVAC Board" "amps" "HVAC Board" $dcmon_priority $dcmon_update_every
+CHART dcmon.board_a_irms '' "Energy consumption of Board A" "amps" "Board A" $((dcmon_priority + 5)) $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
 DIMENSION Tphase '' absolute 1 100
-CHART dcmon.board_a_total_kwh '' "Total energy consumption of Board A" "Kwh" "Board A" $dcmon_priority $dcmon_update_every
+CHART dcmon.board_b_total_kwh '' "Total energy consumption of Board B" "Kwh" "Board B" $((dcmon_priority + 6)) $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
 DIMENSION Tphase '' absolute 1 100
-CHART dcmon.board_a_watts '' "Energy consumption of Board A" "watts" "Board A" $dcmon_priority $dcmon_update_every
+CHART dcmon.board_b_watts '' "Energy consumption of Board B" "watts" "Board B" $((dcmon_priority + 5)) $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
 DIMENSION Tphase '' absolute 1 100
-CHART dcmon.board_a_irms '' "Energy consumption of Board A" "amps" "Board A" $dcmon_priority $dcmon_update_every
+CHART dcmon.board_b_irms '' "Energy consumption of Board B" "amps" "Board B" $((dcmon_priority + 7)) $dcmon_update_every
+DIMENSION Rphase '' absolute 1 100
+DIMENSION Sphase '' absolute 1 100
+DIMENSION Tphase '' absolute 1 100
+CHART dcmon.hvac_board_total_kwh '' "Total energy consumption of HVAC Board" "Kwh" "HVAC Board" $((dcmon_priority + 1)) $dcmon_update_every
+DIMENSION Rphase '' absolute 1 100
+DIMENSION Sphase '' absolute 1 100
+DIMENSION Tphase '' absolute 1 100
+CHART dcmon.hvac_board_watts '' "Energy consumption of HVAC Board" "watts" "HVAC Board" $((dcmon_priority)) $dcmon_update_every
+DIMENSION Rphase '' absolute 1 100
+DIMENSION Sphase '' absolute 1 100
+DIMENSION Tphase '' absolute 1 100
+CHART dcmon.hvac_board_irms '' "Energy consumption of HVAC Board" "amps" "HVAC Board" $((dcmon_priority + 2)) $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
 DIMENSION Tphase '' absolute 1 100
@@ -183,6 +207,22 @@ SET Rphase = $dcmon_RphaseIrmsA
 SET Sphase = $dcmon_SphaseIrmsA
 SET Tphase = $dcmon_TphaseIrmsA
 END
+BEGIN dcmon.board_b_total_kwh $1
+SET Rphase = $dcmon_RphaseKiloWattHoursB
+SET Sphase = $dcmon_SphaseKiloWattHoursB
+SET Tphase = $dcmon_TphaseKiloWattHoursB
+END
+BEGIN dcmon.board_b_watts $1
+SET Rphase = $dcmon_RphaseWattsB
+SET Sphase = $dcmon_SphaseWattsB
+SET Tphase = $dcmon_TphaseWattsB
+END
+BEGIN dcmon.board_b_irms $1
+SET Rphase = $dcmon_RphaseIrmsB
+SET Sphase = $dcmon_SphaseIrmsB
+SET Tphase = $dcmon_TphaseIrmsB
+END
+
 VALUESEOF
 	return 0
 }
