@@ -72,12 +72,17 @@ dcmon_get() {
         # 4. USE LOCAL VARIABLES (global variables may overlap with other modules)
 
 	dcmon_RphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [0] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
-        dcmon_SphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [1] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
-        dcmon_TphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [2] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_SphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [1] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_TphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [2] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
 
-        dcmon_RphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [3] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
-        dcmon_SphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [4] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
-        dcmon_TphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [5] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_RphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [3] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_SphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [4] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_TphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [5] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+
+	dcmon_RphaseKiloWattHours=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [6] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_SphaseKiloWattHours=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [7] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+	dcmon_TphaseKiloWattHours=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [8] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+
 
         # this should return:
         #  - 0 to send the data to netdata
@@ -101,6 +106,10 @@ dcmon_check() {
 dcmon_create() {
 	# create the HVAC Board (watts) chart with 3 dimensions
 	cat <<EOF
+CHART dcmon.hvac_board_total_kwh '' "Total energy consumption of HVAC Board" "Kwh" "HVAC Board" $dcmon_priority $dcmon_update_every
+DIMENSION Rphase '' absolute 1 100
+DIMENSION Sphase '' absolute 1 100
+DIMENSION Tphase '' absolute 1 100
 CHART dcmon.hvac_board_watts '' "Energy consumption of HVAC Board" "watts" "HVAC Board" $dcmon_priority $dcmon_update_every
 DIMENSION Rphase '' absolute 1 100
 DIMENSION Sphase '' absolute 1 100
@@ -123,6 +132,11 @@ dcmon_update() {
 
 	# write the result of the work.
         cat <<VALUESEOF
+BEGIN dcmon.hvac_board_total_kwh $1
+SET Rphase = $dcmon_RphaseKiloWattHours
+SET Sphase = $dcmon_SphaseKiloWattHours
+SET Tphase = $dcmon_TphaseKiloWattHours
+END
 BEGIN dcmon.hvac_board_watts $1
 SET Rphase = $dcmon_RphaseWatts
 SET Sphase = $dcmon_SphaseWatts
