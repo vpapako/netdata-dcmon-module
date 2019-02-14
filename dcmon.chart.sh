@@ -71,13 +71,13 @@ dcmon_get() {
         # 3. AVOID CALLING TOO MANY EXTERNAL PROGRAMS
         # 4. USE LOCAL VARIABLES (global variables may overlap with other modules)
 
-	dcmon_RphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [0] .value' | sed -e 's/["]//g') | sed -e 's/[.]//g')
-        dcmon_SphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [1] .value' | sed -e 's/["]//g') | sed -e 's/[.]//g')
-        dcmon_TphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [2] .value' | sed -e 's/["]//g') | sed -e 's/[.]//g')
+	dcmon_RphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [0] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_SphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [1] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_TphaseWatts=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [2] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
 
-        dcmon_RphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [3] .value' | sed -e 's/["]//g') | sed -e 's/[.]//g')
-        dcmon_SphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [4] .value' | sed -e 's/["]//g') | sed -e 's/[.]//g')
-        dcmon_TphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [5] .value' | sed -e 's/["]//g') | sed -e 's/[.]//g')
+        dcmon_RphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [3] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_SphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [4] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
+        dcmon_TphaseIrms=$(printf '%.2f' $(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [5] .value' | sed -e 's/"//g') | sed -e 's/\.//g')
 
         # this should return:
         #  - 0 to send the data to netdata
