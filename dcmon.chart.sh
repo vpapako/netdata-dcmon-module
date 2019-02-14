@@ -75,6 +75,10 @@ dcmon_get() {
 	dcmon_SphaseWatts=$(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [1] .value' | sed -e 's/["]//g' | awk '{print int($1+0.5)}')
 	dcmon_TphaseWatts=$(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [2] .value' | sed -e 's/["]//g' | awk '{print int($1+0.5)}')
 
+	dcmon_RphaseIrms=$(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [3] .value' | sed -e 's/["]//g' | awk '{print int($1+0.5)}')
+        dcmon_SphaseIrms=$(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [4] .value' | sed -e 's/["]//g' | awk '{print int($1+0.5)}')
+        dcmon_TphaseIrms=$(curl -s "http://dcmon.datacenter.uoc.gr/feed/list.json?userid=1" | jq '. [5] .value' | sed -e 's/["]//g' | awk '{print int($1+0.5)}')
+
         # this should return:
         #  - 0 to send the data to netdata
         #  - 1 to report a failure to collect the data
@@ -97,7 +101,11 @@ dcmon_check() {
 dcmon_create() {
 	# create the HVAC Board (watts) chart with 3 dimensions
 	cat <<EOF
-CHART dcmon.hvac-board-watts '' "Energy consumption of HVAC Board" "watts" $dcmon_priority $dcmon_update_every
+CHART dcmon.hvac_board_watts '' "Energy consumption of HVAC Board" "watts" "HVAC Board" $dcmon_priority $dcmon_update_every
+DIMENSION Rphase '' absolute 1 1
+DIMENSION Sphase '' absolute 1 1
+DIMENSION Tphase '' absolute 1 1
+CHART dcmon.hvac_board_irms '' "Energy consumption of HVAC Board" "amps" "HVAC Board" $dcmon_priority $dcmon_update_every
 DIMENSION Rphase '' absolute 1 1
 DIMENSION Sphase '' absolute 1 1
 DIMENSION Tphase '' absolute 1 1
@@ -115,10 +123,15 @@ dcmon_update() {
 
 	# write the result of the work.
         cat <<VALUESEOF
-BEGIN dcmon.hvac-board-watts $1
+BEGIN dcmon.hvac_board_watts $1
 SET Rphase = $dcmon_RphaseWatts
 SET Sphase = $dcmon_SphaseWatts
 SET Tphase = $dcmon_TphaseWatts
+END
+BEGIN dcmon.hvac_board_irms $1
+SET Rphase = $dcmon_RphaseIrms
+SET Sphase = $dcmon_SphaseIrms
+SET Tphase = $dcmon_TphaseIrms
 END
 VALUESEOF
 	return 0
