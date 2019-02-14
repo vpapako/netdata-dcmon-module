@@ -65,7 +65,10 @@ dcmon_check() {
 	# this should return:
 	#  - 0 to enable the chart
 	#  - 1 to disable the chart
-	return 0
+
+	# check if jq for accessing json data is available
+        require_cmd jq || return 1
+        return 0
 }
 
 # _create is called once, to create the charts
